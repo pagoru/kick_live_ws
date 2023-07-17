@@ -12,6 +12,7 @@ pids
 logs
 results
 tmp
+dist/**/*
 
 # Build
 public/css/main.css
@@ -36,4 +37,3 @@ package-lock.json
 Thumbs.db
 
 # Ignore built ts files
-dist/**/*

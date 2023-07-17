@@ -1,4 +1,4 @@
-export {WebSocketConnection} from './websocket'
+export {WebSocketConnection,MessageEvents} from './websocket'
 export {
     TWebsocketMessage,
     TChatMessageEvent,

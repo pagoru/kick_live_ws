@@ -4,21 +4,21 @@ import { CHANNEL } from "./api-routes/kick";
 import { scrapeWebsite } from "./fetch/userAPI";
 import { TWebsocketMessage } from "./types/websocketTypes";
 
-const MessageEvents = {
-    CHAT: 'chat',
-    FOLLOWERUPDATE: 'followerupdate',
-    BAN: 'ban',
-    UNBAN: 'unban',
-    MESSEAGEDELETE: 'messagedelete',
-    STOPSTREAM: 'stopstream',
-    CHANNELSUBSCRIPTION: 'channelsubscription',
-    GIFTEDSUBSCRIPTION: 'giftedsubscription',
-    LUCKYUSERSWHOGOTGIFTSUBSCRIPTIONS: 'luckyuserswhogotgiftsubscriptions',
-    GIFTSLEADERBOARDUPDATED: 'giftsleaderboardupdated',
-    CHATROOMUPDATED: 'chatroomupdated',
-    STREAMHOST: 'streamhost',
-    ERROR: 'error',
-    CONNECTED: 'connected',
+export const enum MessageEvents {
+    CHAT = 'chat',
+    FOLLOWERUPDATE = 'followerupdate',
+    BAN = 'ban',
+    UNBAN = 'unban',
+    MESSEAGEDELETE = 'messagedelete',
+    STOPSTREAM = 'stopstream',
+    CHANNELSUBSCRIPTION = 'channelsubscription',
+    GIFTEDSUBSCRIPTION = 'giftedsubscription',
+    LUCKYUSERSWHOGOTGIFTSUBSCRIPTIONS = 'luckyuserswhogotgiftsubscriptions',
+    GIFTSLEADERBOARDUPDATED = 'giftsleaderboardupdated',
+    CHATROOMUPDATED = 'chatroomupdated',
+    STREAMHOST = 'streamhost',
+    ERROR = 'error',
+    CONNECTED = 'connected',
 };
 
 function generateSubscribeEventChatrooms(chatroomName: string | number) {
@@ -42,8 +42,8 @@ function generateSubscribeEventChannel(channelName: string | number) {
 export class WebSocketConnection extends EventEmitter {
     private name: string;
     private connected: boolean = false;
-    private channelName: string | number = '';
-    private chatroomName: string | number = '';
+    public channelName: string | number = '';
+    public chatroomName: string | number = '';
     private wsConnection: WebSocket;
     constructor(name: string) {
         super();
@@ -51,7 +51,7 @@ export class WebSocketConnection extends EventEmitter {
         this.wsConnection = new WebSocket('wss://ws-us2.pusher.com/app/eb1d5f283081a78b932c?protocol=7&client=js&version=7.6.0&flash=false');
 
         this.wsConnection.onopen = (event) => {
-            this.connected = true
+            this.connected = false
             console.log('connected to websocket')
         }
 
@@ -63,40 +63,40 @@ export class WebSocketConnection extends EventEmitter {
         this.wsConnection.onmessage = (event) => {
             const websocket_message: TWebsocketMessage = JSON.parse(String(event.data));
             switch (websocket_message.event) {
-                case 'App\\Events\\ChatMessageEvent':
+                case 'App\\\\Events\\\\ChatMessageEvent':
                     this.emit(MessageEvents.CHAT, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\FollowersUpdated':
+                case 'App\\\\Events\\\\FollowersUpdated':
                     this.emit(MessageEvents.FOLLOWERUPDATE, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\UserBannedEvent':
+                case 'App\\\\Events\\\\UserBannedEvent':
                     this.emit(MessageEvents.BAN, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\UserUnbannedEvent':
+                case 'App\\\\Events\\\\UserUnbannedEvent':
                     this.emit(MessageEvents.UNBAN, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\ChannelSubscriptionEvent':
+                case 'App\\\\Events\\\\ChannelSubscriptionEvent':
                     this.emit(MessageEvents.CHANNELSUBSCRIPTION, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\GiftedSubscriptionsEvent':
+                case 'App\\\\Events\\\\GiftedSubscriptionsEvent':
                     this.emit(MessageEvents.GIFTEDSUBSCRIPTION, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\LuckyUsersWhoGotGiftSubscriptionsEvent':
+                case 'App\\\\Events\\\\LuckyUsersWhoGotGiftSubscriptionsEvent':
                     this.emit(MessageEvents.LUCKYUSERSWHOGOTGIFTSUBSCRIPTIONS, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\GiftsLeaderboardUpdated':
+                case 'App\\\\Events\\\\GiftsLeaderboardUpdated':
                     this.emit(MessageEvents.GIFTSLEADERBOARDUPDATED, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\MessageDeletedEvent':
+                case 'App\\\\Events\\\\MessageDeletedEvent':
                     this.emit(MessageEvents.MESSEAGEDELETE, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\StopStreamBroadcast':
+                case 'App\\\\Events\\\\StopStreamBroadcast':
                     this.emit(MessageEvents.STOPSTREAM, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\ChatroomUpdatedEvent':
+                case 'App\\\\Events\\\\ChatroomUpdatedEvent':
                     this.emit(MessageEvents.CHATROOMUPDATED, JSON.parse(websocket_message.data))
                     break;
-                case 'App\\Events\\StreamHostEvent':
+                case 'App\\\\Events\\\\StreamHostEvent':
                     this.emit(MessageEvents.STREAMHOST, JSON.parse(websocket_message.data))
                     break;
                 case 'pusher:error':
@@ -143,14 +143,15 @@ export class WebSocketConnection extends EventEmitter {
 
     public async connect() {
         try {
-        if (this.connected === true) {
-            throw new Error("Already connected")
-        }
+            if (this.connected === true) {
+                throw new Error("Already connected")
+            }
             await this.getIds()
             if (this.wsConnection.readyState === WebSocket.OPEN && this.connected === false) {
                 try {
                     this.wsConnection.send(JSON.stringify(generateSubscribeEventChannel(this.channelName)))
                     this.wsConnection.send(JSON.stringify(generateSubscribeEventChatrooms(this.chatroomName)))
+                    this.connected = true
                 } catch (err: any) {
                     throw new Error("Error while sending subscription events")
                 }
@@ -169,8 +170,8 @@ export class WebSocketConnection extends EventEmitter {
                     // Handle den Fehler entsprechend
                 }
             }
-        }catch (error){
-        this.emit('errorEvent',error)
+        } catch (error) {
+            this.emit('errorEvent', error)
         }
     }
 }
