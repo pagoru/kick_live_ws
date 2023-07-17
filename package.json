@@ -1,0 +1,22 @@
+{
+  "devDependencies": {
+    "@types/ws": "^8.5.5",
+    "typescript": "^5.1.6"
+  },
+  "name": "kick_live_ws",
+  "version": "1.0.2",
+  "description": "just a small module to connect to Kick Websocket and read data",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "ws": "^8.13.0"
+  }
+}
