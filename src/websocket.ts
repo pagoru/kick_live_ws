@@ -17,6 +17,7 @@ export const enum MessageEvents {
     GIFTSLEADERBOARDUPDATED = 'giftsleaderboardupdated',
     CHATROOMUPDATED = 'chatroomupdated',
     STREAMHOST = 'streamhost',
+    PINNEDMESSAGECREATED = 'pinnedmessagecreated',
     ERROR = 'error',
     CONNECTED = 'connected',
     DISCONNECT = 'disconnect'
@@ -93,6 +94,9 @@ export class WebSocketConnection extends EventEmitter {
                 case 'App\\Events\\UserUnbannedEvent':
                     this.emit(MessageEvents.UNBAN, JSON.parse(websocket_message.data))
                     break;
+                case 'App\\Events\\SubscriptionEvent':
+                    this.emit(MessageEvents.UNBAN, JSON.parse(websocket_message.data))
+                    break;
                 case 'App\\Events\\ChannelSubscriptionEvent':
                     this.emit(MessageEvents.CHANNELSUBSCRIPTION, JSON.parse(websocket_message.data))
                     break;
@@ -116,6 +120,12 @@ export class WebSocketConnection extends EventEmitter {
                     break;
                 case 'App\\Events\\StreamHostEvent':
                     this.emit(MessageEvents.STREAMHOST, JSON.parse(websocket_message.data))
+                    break;
+                case 'App\\Events\\PinnedMessageCreatedEvent':
+                    this.emit(MessageEvents.PINNEDMESSAGECREATED, JSON.parse(websocket_message.data))
+                    break;
+                case 'App\\Events\\PinnedMessageDeletedEvent':
+                    this.emit(MessageEvents.PINNEDMESSAGECREATED, JSON.parse(websocket_message.data))
                     break;
                 case 'pusher:error':
                     this.emit(MessageEvents.ERROR, event)

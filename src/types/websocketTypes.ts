@@ -120,9 +120,28 @@ export type TStreamHost = {
   host_username: string 
 }
 
+export type TPinnedMessageCreated = {message: {
+         chatroom_id: number,
+         content: string,
+         created_at: Date,
+         id: string,
+         sender: {
+           id: number,
+           username: string,
+           slug: string,
+           identity: [Object]
+         },
+         type: string,
+       },
+       duration: number
+    }
 export type TSubscribtionGifter = {
     user_id: number, username: string, quantity: number
 }
+
+export type TSubscribtionEvent = 
+    { chatroom_id: number, username: string, months: number }
+
 
 export type TSubscriberBadge = {
     type: string; text: string; count: number;
