@@ -4,7 +4,7 @@
     "typescript": "^5.1.6"
   },
   "name": "kick_live_ws",
-  "version": "1.0.9",
+  "version": "1.2.0",
   "description": "just a small module to connect to Kick Websocket and read data",
   "main": "dist/index.js",
   "scripts": {
@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "is-docker": "^3.0.0",
     "puppeteer": "^20.8.2",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",

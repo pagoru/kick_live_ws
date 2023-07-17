@@ -1,17 +1,39 @@
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import { execSync } from 'child_process';
+//import isDocker from 'is-docker'
+
+function isDocker() {
+  try {
+    // Führt den Befehl "cat /proc/1/cgroup" aus und überprüft, ob "docker" in der Ausgabe enthalten ist
+    const output = execSync('cat /proc/1/cgroup', { encoding: 'utf-8' });
+    return output.includes('docker');
+  } catch (error) {
+    // Fehlerbehandlung: Wenn es einen Fehler beim Ausführen des Befehls gibt, gehen wir davon aus, dass wir nicht in einem Docker-Container sind
+    return false;
+  }
+}
 
 const puppeteerExtra = puppeteer.use(StealthPlugin()) as typeof puppeteer;
 
 
 export async function scrapeWebsite(url: string): Promise<{ data: any[] }> {
-  const browser = await puppeteerExtra.launch({
-    headless: "new"
-  })
+  let launchOptions = {};
+
+  if (isDocker()) {
+    launchOptions = {
+      executablePath: '/usr/bin/google-chrome',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: "new"
+    };
+  } else {
+    launchOptions = {
+      headless: "new",
+    };
+  }
+    const browser = await puppeteerExtra.launch(launchOptions);
     const page = await browser.newPage();
     await page.goto(url);
-  
-    // Warte auf das Laden der Seite und erhalte den HTML-Inhalt
     await page.waitForSelector('body');
     const jsonContent = await page.evaluate(() => {
       const bodyElement = document.querySelector('body');
