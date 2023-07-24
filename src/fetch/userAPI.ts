@@ -17,7 +17,7 @@ function isDocker() {
 const puppeteerExtra = puppeteer.use(StealthPlugin()) as typeof puppeteer;
 
 
-export async function scrapeWebsite(url: string): Promise<{ data: any[] }> {
+export async function scrapeWebsite(url: string): Promise<{ data: any }> {
   let launchOptions = {};
 
   if (isDocker()) {

@@ -98,6 +98,17 @@ export type TMessageDelete = {
     message: { id: string }
 }
 
+export type TStreamerIsLive = 
+{
+   livestream: {
+     id: number,
+     channel_id: number,
+     session_title: string,
+     source: null| string,
+     created_at: string
+   }
+ }
+
 export type TStopStream = 
     {
         livestream: { id: number, channel: { id: number, is_banned: boolean } }
@@ -148,7 +159,7 @@ export type TSubscriberBadge = {
 }
 
 export type TModeratorBadge = {
-    type: string; text: string;
+    type: string; text: string; count?: number;
 }
 
 export enum EChatMessageEventType {

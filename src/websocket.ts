@@ -10,7 +10,9 @@ export const enum MessageEvents {
     BAN = 'ban',
     UNBAN = 'unban',
     MESSEAGEDELETE = 'messagedelete',
+    STREAMSTART = 'streamstart',
     STOPSTREAM = 'stopstream',
+    SUBSCRIPTIONEVENT = 'subscriptionevent',
     CHANNELSUBSCRIPTION = 'channelsubscription',
     GIFTEDSUBSCRIPTION = 'giftedsubscription',
     LUCKYUSERSWHOGOTGIFTSUBSCRIPTIONS = 'luckyuserswhogotgiftsubscriptions',
@@ -18,9 +20,12 @@ export const enum MessageEvents {
     CHATROOMUPDATED = 'chatroomupdated',
     STREAMHOST = 'streamhost',
     PINNEDMESSAGECREATED = 'pinnedmessagecreated',
+    PINNEDMESSAGEDELETED = 'pinnedmessagedeleted',
     ERROR = 'error',
     CONNECTED = 'connected',
-    DISCONNECT = 'disconnect'
+    DISCONNECT = 'disconnect',
+    EVERYTHING = 'everything',
+    UNTRACKED = 'untracked',
 };
 
 function generateSubscribeEventChatrooms(chatroomName: string | number) {
@@ -47,6 +52,8 @@ interface WebSocketConnectionOptions {
     channel_id?: string | number;  // Das Fragezeichen macht das Feld optional
 }
 
+
+
 export class WebSocketConnection extends EventEmitter {
     private name: string;
     private connected: boolean = false;
@@ -55,31 +62,19 @@ export class WebSocketConnection extends EventEmitter {
     public chatroom_id: string | number = '';
     public channel_id: string | number = '';
     private wsConnection: WebSocket;
-    constructor({ name, chatroom_id, channel_id }:WebSocketConnectionOptions) {
-        super();
-        this.name = name;
-        this.chatroom_id = chatroom_id  !== undefined ? chatroom_id : '';
-        this.channel_id = channel_id  !== undefined ? channel_id : '';
-        this.wsConnection = new WebSocket('wss://ws-us2.pusher.com/app/eb1d5f283081a78b932c?protocol=7&client=js&version=7.6.0&flash=false');
+    private addListenerTypes() {
 
-        this.wsConnection.onopen = (event) => {
-            this.connected = false
-            console.log('connected to websocket')
-        }
 
         this.wsConnection.onclose = () => {
             this.connected = false
-            this.emit(MessageEvents.DISCONNECT,'disconnected')
+            this.emit(MessageEvents.DISCONNECT, 'disconnected')
             console.log('disconnected from websocket')
         }
 
-        this.wsConnection.onerror = () => {
-            this.connected = false
-            this.emit(MessageEvents.ERROR,'error')
-            console.log('disconnected from websocket due to error')
-        }
 
         this.wsConnection.onmessage = (event) => {
+            this.emit(MessageEvents.EVERYTHING, event)
+
             const websocket_message: TWebsocketMessage = JSON.parse(String(event.data));
             switch (websocket_message.event) {
                 case 'App\\Events\\ChatMessageEvent':
@@ -95,7 +90,7 @@ export class WebSocketConnection extends EventEmitter {
                     this.emit(MessageEvents.UNBAN, JSON.parse(websocket_message.data))
                     break;
                 case 'App\\Events\\SubscriptionEvent':
-                    this.emit(MessageEvents.UNBAN, JSON.parse(websocket_message.data))
+                    this.emit(MessageEvents.SUBSCRIPTIONEVENT, JSON.parse(websocket_message.data))
                     break;
                 case 'App\\Events\\ChannelSubscriptionEvent':
                     this.emit(MessageEvents.CHANNELSUBSCRIPTION, JSON.parse(websocket_message.data))
@@ -112,6 +107,9 @@ export class WebSocketConnection extends EventEmitter {
                 case 'App\\Events\\MessageDeletedEvent':
                     this.emit(MessageEvents.MESSEAGEDELETE, JSON.parse(websocket_message.data))
                     break;
+                case 'App\\Events\\StreamerIsLive':
+                    this.emit(MessageEvents.STREAMSTART, JSON.parse(websocket_message.data))
+                    break;
                 case 'App\\Events\\StopStreamBroadcast':
                     this.emit(MessageEvents.STOPSTREAM, JSON.parse(websocket_message.data))
                     break;
@@ -125,7 +123,7 @@ export class WebSocketConnection extends EventEmitter {
                     this.emit(MessageEvents.PINNEDMESSAGECREATED, JSON.parse(websocket_message.data))
                     break;
                 case 'App\\Events\\PinnedMessageDeletedEvent':
-                    this.emit(MessageEvents.PINNEDMESSAGECREATED, JSON.parse(websocket_message.data))
+                    this.emit(MessageEvents.PINNEDMESSAGEDELETED, JSON.parse(websocket_message.data))
                     break;
                 case 'pusher:error':
                     this.emit(MessageEvents.ERROR, event)
@@ -134,28 +132,47 @@ export class WebSocketConnection extends EventEmitter {
                     this.emit(MessageEvents.CONNECTED, event)
                     break;
                 default:
-                    console.log(websocket_message.event)
-                    console.log(JSON.parse(websocket_message.data))
+                    this.emit(MessageEvents.UNTRACKED, event)
                     break;
             }
-            // const message = event.data;
-            // console.log(`Received message: ${message}`);
-        };
+        }
     }
+    constructor({ name, chatroom_id, channel_id }: WebSocketConnectionOptions) {
+        super();
+        this.name = name;
+        this.chatroom_id = chatroom_id !== undefined ? chatroom_id : '';
+        this.channel_id = channel_id !== undefined ? channel_id : '';
+        this.wsConnection = new WebSocket('wss://ws-us2.pusher.com/app/eb1d5f283081a78b932c?protocol=7&client=js&version=7.6.0&flash=false');
+        this.wsConnection.onopen = (event) => {
+            console.log('WebSocket connected successfully');
+            this.addListenerTypes();
+        };
+
+        this.wsConnection.onerror = (error) => {
+            this.connected = false
+            this.emit(MessageEvents.ERROR, 'error')
+            console.log('disconnected from websocket due to error', error)
+        };
+        this.addListenerTypes()
+    }
+
+
 
     private async connectWebSocket() {
         return new Promise((resolve, reject) => {
             this.wsConnection = new WebSocket('wss://ws-us2.pusher.com/app/eb1d5f283081a78b932c?protocol=7&client=js&version=7.6.0&flash=false');
 
-            this.wsConnection.onopen = () => {
-                console.log('WebSocket connection established');
-                this.connected = false
-                resolve(this.wsConnection); // Resolves the promise with the WebSocket object
+            this.wsConnection.onopen = (event) => {
+                console.log('WebSocket connected successfully');
+                this.addListenerTypes();
+                resolve(event); // Resolve the promise as the connection and listener setup was successful
             };
 
             this.wsConnection.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                reject(error); // Rejects the promise with the error
+                this.connected = false
+                this.emit(MessageEvents.ERROR, 'error')
+                console.log('disconnected from websocket due to error', error)
+                reject(error); // Reject the promise if there was an error during connection setup
             };
         });
     }
@@ -164,16 +181,14 @@ export class WebSocketConnection extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 const websiteUrl = CHANNEL + this.name;
-                console.log('pre scrap');
-                const htmlContent = await scrapeWebsite(websiteUrl);
-                console.log('past scrap');
-                const rainerwinklerdl_data: any = htmlContent;
+                const rainerwinklerdl_data:any = await scrapeWebsite(websiteUrl);
+
                 this.channelName = rainerwinklerdl_data.chatroom.channel_id;
                 this.chatroomName = rainerwinklerdl_data.chatroom.id;
                 console.log(rainerwinklerdl_data.chatroom.id);
                 resolve(rainerwinklerdl_data); // Resolves the Promise when the asynchronous operation is completed
             } catch (error) {
-                console.log('error get ids',error)
+                console.log('error get ids', error)
                 reject(error); // Rejects the Promise if an error occurs during the asynchronous operation
             }
         });
@@ -187,19 +202,19 @@ export class WebSocketConnection extends EventEmitter {
                 throw new Error("Already connected")
             }
             console.log('getting ids')
-            if(this.channel_id ==='' && this.chatroom_id===''){
-            await this.getIds()
+            if (this.channel_id === '' && this.chatroom_id === '') {
+                await this.getIds()
             }
             console.log('got ids')
             if (this.wsConnection.readyState === WebSocket.OPEN && this.connected === false) {
                 console.log('sending subscribtions')
                 try {
-                    if(this.channel_id ==='' && this.chatroom_id===''){
+                    if (this.channel_id === '' && this.chatroom_id === '') {
                         this.wsConnection.send(JSON.stringify(generateSubscribeEventChannel(this.channelName)))
                         this.wsConnection.send(JSON.stringify(generateSubscribeEventChatrooms(this.chatroomName)))
-                    }else{
+                    } else {
                         this.wsConnection.send(JSON.stringify(generateSubscribeEventChannel(this.channel_id)))
-                        this.wsConnection.send(JSON.stringify(generateSubscribeEventChatrooms(this.chatroom_id))) 
+                        this.wsConnection.send(JSON.stringify(generateSubscribeEventChatrooms(this.chatroom_id)))
                     }
                     this.connected = true
                     console.log('listening to chat')
@@ -222,7 +237,6 @@ export class WebSocketConnection extends EventEmitter {
                 }
             }
         } catch (error) {
-            console.log('in error event')
             this.emit('errorEvent', error)
         }
     }
