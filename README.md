@@ -39,8 +39,8 @@ To create a new `WebSocketConnection` object the following parameters are requir
 | Param Name | Required | Description |
 | ---------- | -------- | ----------- |
 | name   | Yes | The unique username of the broadcaster. You can find this name in the URL.<br>Example: `https://kick.com/xQc` => `xQc` |
-| chatroom_id | No(Both Yes) |  The unique chatroom_id stays the same for every stream. Chat is also up and recieving messages when the streamer is offline. `https://kick.com/api/v2/channels/xQc` | CHANNEL + `xQc` => data.chatroom.id |
-| channel_id  | No(Both Yes)| The unique chatroom_id stays the same for every stream. Chat is also up and recieving messages when the streamer is offline. `https://kick.com/api/v2/channels/xQc` | CHANNEL + `xQc` => data.chatroom.channel_id |
+| chatroom_id | No(Both Yes) |  The unique chatroom_id stays the same for every stream. Chat is also up and recieving messages when the streamer is offline. Fetch `https://kick.com/api/v2/channels/xQc` or CHANNEL + `xQc`  => data.chatroom.id |
+| channel_id  | No(Both Yes)| The unique chatroom_id stays the same for every stream. Chat is also up and recieving messages when the streamer is offline. Fetch `https://kick.com/api/v2/channels/xQc` or CHANNEL + `xQc` => data.chatroom.channel_id |
 
 You can bypass the puppeteer getting Ids by setting chatroom_id and channel_id. Both have to be set, only 1 will not work.
 
