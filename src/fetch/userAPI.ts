@@ -1,16 +1,15 @@
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import { execSync } from 'child_process';
-//import isDocker from 'is-docker'
 
 function isDocker() {
   try {
     // Führt den Befehl "cat /proc/1/cgroup" aus und überprüft, ob "docker" in der Ausgabe enthalten ist
     const output = execSync('cat /proc/1/cgroup', { encoding: 'utf-8' });
-    return output.includes('docker');
+    return output.includes('docker') || Boolean(process.env.DOCKER);
   } catch (error) {
     // Fehlerbehandlung: Wenn es einen Fehler beim Ausführen des Befehls gibt, gehen wir davon aus, dass wir nicht in einem Docker-Container sind
-    return false;
+    return Boolean(process.env.DOCKER);
   }
 }
 

@@ -18,20 +18,43 @@ export type TChatMessageEvent = {
     }
 }
 
-export type TUserBanEvent = {
+export type TBanEvent = {
     id: string;
     user: TUser,
     banned_by: TUser,
     expires_at: Date
-
 }
 
-export type TUserUnBanEvent = {
+export type TUnBanEvent = {
     id: string;
     user: TUser,
     unbanned_by: TUser,
-
 }
+
+export type TMessageDelete = {
+    id: string,
+    message: { id: string }
+}
+
+export type TStreamStartEvent =
+    {
+        livestream: {
+            id: number,
+            channel_id: number,
+            session_title: string,
+            source: null | string,
+            created_at: string
+        }
+    }
+
+export type TStopStreamEvent =
+    {
+        livestream: { id: number, channel: { id: number, is_banned: boolean } }
+    }
+
+
+export type TSubscribtionEvent =
+    { chatroom_id: number, username: string, months: number }
 
 export type TChannelSubscriptionEvent = {
     user_ids: number[],
@@ -45,7 +68,26 @@ export type TGiftedSubscriptionsEvent = {
     gifter_username: string
 }
 
-export type TChannelUpdateInfo = {
+
+export type TLuckyUsersWhoGotGiftSubscriptionsEvent = {
+    channel: TChannelUpdatedEvent['channel'],
+    usernames: string[],
+    gifter_username: string
+}
+
+
+export type TGiftsLeaderboardUpdatedEvent = {
+    channel: TChannelUpdatedEvent['channel'],
+    leaderboard:
+    TSubscribtionGifter[],
+
+    weekly_leaderboard: TSubscribtionGifter[],
+    monthly_leaderboard: TSubscribtionGifter[],
+    gifter_id: number,
+    gifted_quantity: number
+}
+
+export type TChannelUpdatedEvent = {
     channel: {
         id: number,
         user_id: number,
@@ -75,84 +117,41 @@ export type TChannelUpdateInfo = {
     },
 }
 
-export type TLuckyUsersWhoGotGiftSubscriptionsEvent = {
-    channel: TChannelUpdateInfo['channel'],
-    usernames: string[],
-    gifter_username: string
-
-}
-
-export type TGiftsLeaderboardUpdated = {
-    channel: TChannelUpdateInfo['channel'],
-    leaderboard:
-    TSubscribtionGifter[],
-
-    weekly_leaderboard: TSubscribtionGifter[],
-    monthly_leaderboard: TSubscribtionGifter[],
-    gifter_id: number,
-    gifted_quantity: number
-}
-
-export type TMessageDelete = {
-    id: string,
-    message: { id: string }
-}
-
-export type TStreamerIsLive = 
-{
-   livestream: {
-     id: number,
-     channel_id: number,
-     session_title: string,
-     source: null| string,
-     created_at: string
-   }
- }
-
-export type TStopStream = 
-    {
-        livestream: { id: number, channel: { id: number, is_banned: boolean } }
-      }
-
-
-export type TChatroomUpdated = {
+export type TChatroomUpdatedEvent = {
     id: number,
-  slow_mode: { enabled: boolean, message_interval: number },
-  subscribers_mode: { enabled: boolean },
-  followers_mode: { enabled: boolean, min_duration: number },
-  emotes_mode: { enabled: boolean },
-  advanced_bot_protection: { enabled: boolean, remaining_time: number } 
+    slow_mode: { enabled: boolean, message_interval: number },
+    subscribers_mode: { enabled: boolean },
+    followers_mode: { enabled: boolean, min_duration: number },
+    emotes_mode: { enabled: boolean },
+    advanced_bot_protection: { enabled: boolean, remaining_time: number }
 }
 
-export type TStreamHost = {
+export type TStreamHostEvent = {
     chatroom_id: number,
-  optional_message: string,
-  number_viewers: number,
-  host_username: string 
+    optional_message: string,
+    number_viewers: number,
+    host_username: string
 }
 
-export type TPinnedMessageCreated = {message: {
-         chatroom_id: number,
-         content: string,
-         created_at: Date,
-         id: string,
-         sender: {
-           id: number,
-           username: string,
-           slug: string,
-           identity: [Object]
-         },
-         type: string,
-       },
-       duration: number
-    }
+export type TPinnedMessageCreatedEvent = {
+    message: {
+        chatroom_id: number,
+        content: string,
+        created_at: Date,
+        id: string,
+        sender: {
+            id: number,
+            username: string,
+            slug: string,
+            identity: [Object]
+        },
+        type: string,
+    },
+    duration: number
+}
 export type TSubscribtionGifter = {
     user_id: number, username: string, quantity: number
 }
-
-export type TSubscribtionEvent = 
-    { chatroom_id: number, username: string, months: number }
-
 
 export type TSubscriberBadge = {
     type: string; text: string; count: number;
