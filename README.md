@@ -87,7 +87,7 @@ kickConnection.on(MessageEvents.CHATMESSAGE,(messagedata: TChatMessageEvent) => 
 <br>
 
 ### `BAN`
-Triggered everytime a new ban message arrives.
+Triggered everytime a user gets banned.
 
 ```javascript
 
@@ -100,7 +100,7 @@ Triggered everytime a new ban message arrives.
 <br>
 
 ### `DISCONNECT`
-Triggered everytime a user gets banned.
+Triggered everytime the websocket disconnects.
 
 You can use this to reconnect. kickConnection will handle the reconnect and add listeners again.
 
