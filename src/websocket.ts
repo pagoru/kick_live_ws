@@ -178,7 +178,7 @@ export class WebSocketConnection extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 const websiteUrl = CHANNEL + this.name;
-                const rainerwinklerdl_data:any = await scrapeWebsite(websiteUrl);
+                const rainerwinklerdl_data = await scrapeWebsite(websiteUrl);
 
                 this.channelName = rainerwinklerdl_data.chatroom.channel_id;
                 this.chatroomName = rainerwinklerdl_data.chatroom.id;

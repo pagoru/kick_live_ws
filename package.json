@@ -5,7 +5,7 @@
     "typescript": "^5.1.6"
   },
   "name": "kick_live_ws",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "just a small module to connect to Kick Websocket and read data",
   "main": "dist/index.js",
   "scripts": {

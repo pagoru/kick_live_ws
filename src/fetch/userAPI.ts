@@ -16,7 +16,7 @@ function isDocker() {
 const puppeteerExtra = puppeteer.use(StealthPlugin()) as typeof puppeteer;
 
 
-export async function scrapeWebsite(url: string): Promise<{ data: any }> {
+export async function scrapeWebsite(url: string): Promise<any> {
   let launchOptions = {};
 
   if (isDocker()) {
@@ -34,6 +34,7 @@ export async function scrapeWebsite(url: string): Promise<{ data: any }> {
     const page = await browser.newPage();
     await page.goto(url);
     await page.waitForSelector('body');
+    try{
     const jsonContent = await page.evaluate(() => {
       const bodyElement = document.querySelector('body');
       const bodyText = bodyElement ? bodyElement.textContent : null;
@@ -43,4 +44,8 @@ export async function scrapeWebsite(url: string): Promise<{ data: any }> {
   
     await browser.close();
     return jsonContent;
+    }catch (err: any) {
+      throw new Error("Not a Valid JSON from kick API")
+
+    }
   }

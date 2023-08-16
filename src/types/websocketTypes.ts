@@ -18,6 +18,14 @@ export type TChatMessageEvent = {
     }
 }
 
+export type TFolloersUpdatedEvent = 
+    {followersCount:number,
+        channel_id:number,
+        username?:string,
+        created_at:number,
+        followed:boolean}
+
+
 export type TBanEvent = {
     id: string;
     user: TUser,
