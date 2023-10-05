@@ -16,7 +16,16 @@ export type TChatMessageEvent = {
         slug: string;
         identity: { color: string; badges: [TSubscriberBadge | TModeratorBadge] }
     }
+    metadata: {
+        original_sender: { id: number, username: string },
+        original_message: {
+          id: string,
+          content: string
+        }
+      }
 }
+
+
 
 export type TFolloersUpdatedEvent = 
     {followersCount:number,

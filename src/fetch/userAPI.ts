@@ -45,7 +45,6 @@ export async function scrapeWebsite(url: string): Promise<any> {
     await browser.close();
     return jsonContent;
     }catch (err: any) {
-      throw new Error("Not a Valid JSON from kick API")
-
+      throw err;
     }
   }
