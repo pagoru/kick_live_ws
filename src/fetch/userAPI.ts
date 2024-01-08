@@ -28,6 +28,7 @@ export async function scrapeWebsite(url: string): Promise<any> {
   } else {
     launchOptions = {
       headless: "new",
+      args: ['--no-sandbox'],
     };
   }
     const browser = await puppeteerExtra.launch(launchOptions);

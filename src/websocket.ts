@@ -178,11 +178,11 @@ export class WebSocketConnection extends EventEmitter {
         return new Promise(async (resolve, reject) => {
             try {
                 const websiteUrl = CHANNEL + this.name;
-                const rainerwinklerdl_data = await scrapeWebsite(websiteUrl);
+                const json_data = await scrapeWebsite(websiteUrl);
 
-                this.channelName = rainerwinklerdl_data.chatroom.channel_id;
-                this.chatroomName = rainerwinklerdl_data.chatroom.id;
-                resolve(rainerwinklerdl_data);// Resolves the Promise when the asynchronous operation is completed
+                this.channelName = json_data.chatroom.channel_id;
+                this.chatroomName = json_data.chatroom.id;
+                resolve(json_data);// Resolves the Promise when the asynchronous operation is completed
             } catch (error) {
                 console.log('error get ids', error)
                 this.emit(MessageEvents.DISCONNECT, "can not get ids")
