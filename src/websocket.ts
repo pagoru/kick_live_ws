@@ -185,6 +185,7 @@ export class WebSocketConnection extends EventEmitter {
                 resolve(rainerwinklerdl_data);// Resolves the Promise when the asynchronous operation is completed
             } catch (error) {
                 console.log('error get ids', error)
+                this.emit(MessageEvents.DISCONNECT, "can not get ids")
                 reject(error);// Rejects the Promise if an error occurs during the asynchronous operation
             }
         });
