@@ -35,6 +35,7 @@ export async function scrapeWebsite(url: string): Promise<any> {
     const page = await browser.newPage();
     await page.goto(url);
     await page.waitForSelector('body');
+    console.log("meddl1:",document)
     try{
     const jsonContent = await page.evaluate(() => {
       const bodyElement = document.querySelector('body');
