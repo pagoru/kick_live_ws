@@ -46,6 +46,7 @@ export async function scrapeWebsite(url: string): Promise<any> {
     await browser.close();
     return jsonContent;
     }catch (err: any) {
+      await browser.close();
       throw err;
     }
   }
